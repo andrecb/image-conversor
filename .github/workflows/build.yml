@@ -30,12 +30,6 @@ jobs:
             artifact: Conversor-de-Imagens-macOS-arm64
             path: out/make/zip/darwin/arm64/*.zip
 
-          - name: macOS universal
-            os: macos-14
-            script: make:mac:universal
-            artifact: Conversor-de-Imagens-macOS-universal
-            path: out/make/zip/darwin/universal/*.zip
-
           - name: Windows x64
             os: windows-latest
             script: make:win
