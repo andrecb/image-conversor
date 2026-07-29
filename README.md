@@ -237,12 +237,19 @@ The repository includes [`.github/workflows/build.yml`](.github/workflows/build.
 | Windows x64 (Squirrel) | `windows-latest` |
 | Linux x64 (DEB + RPM + ZIP) | `ubuntu-latest` |
 
-**How to trigger (main branch only):**
+**How to trigger:**
 
-1. **Push to `main`** — runs automatically
+1. **Push to `main`** — builds all platforms and uploads workflow **Artifacts** (14 days)
 2. **Manual:** Actions → **Build** → **Run workflow** (select `main`)
+3. **Tag `v*`** — builds all platforms, then creates/updates a **GitHub Release** and attaches the binaries:
+   ```bash
+   git checkout main
+   git pull
+   git tag v1.0.0
+   git push origin v1.0.0
+   ```
 
-Artifacts are available on the workflow run (**Artifacts** tab), retained for 14 days.
+> The Release job runs only after all build jobs finish successfully.
 
 > Unsigned macOS builds may require allowing the app under **Privacy & Security** on first launch.
 
