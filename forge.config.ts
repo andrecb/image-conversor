@@ -79,12 +79,47 @@ const copyNativeModules = async (buildPath: string) => {
   }
 };
 
+const APP_DISPLAY_NAME = 'Conversor de Imagens';
+const APP_EXECUTABLE_NAME = 'image-conversor';
+
+const fixMacDisplayName = async (appPath: string) => {
+  const plistPath = path.join(appPath, 'Contents', 'Info.plist');
+  try {
+    let plist = await fs.promises.readFile(plistPath, 'utf8');
+    plist = plist.replace(
+      /(<key>CFBundleDisplayName<\/key>\s*<string>)[^<]*(<\/string>)/,
+      `$1${APP_DISPLAY_NAME}$2`,
+    );
+    plist = plist.replace(
+      /(<key>CFBundleName<\/key>\s*<string>)[^<]*(<\/string>)/,
+      `$1${APP_DISPLAY_NAME}$2`,
+    );
+    await fs.promises.writeFile(plistPath, plist);
+  } catch {
+    // Info.plist may not exist yet for non-mac builds
+  }
+};
+
 const config: ForgeConfig = {
   packagerConfig: {
-    name: 'Conversor de Imagens',
+    name: APP_DISPLAY_NAME,
+    executableName: APP_EXECUTABLE_NAME,
     asar: {
       unpack: '{**/node_modules/**/*,**/*.node}',
     },
+    afterComplete: [
+      (buildPath, _electronVersion, platform, _arch, done) => {
+        (async () => {
+          if (platform !== 'darwin') return;
+          const appPath = buildPath.endsWith('.app')
+            ? buildPath
+            : path.join(buildPath, `${APP_DISPLAY_NAME}.app`);
+          await fixMacDisplayName(appPath);
+        })()
+          .then(() => done())
+          .catch((err) => done(err));
+      },
+    ],
   },
   rebuildConfig: {
     onlyModules: [],
@@ -97,8 +132,20 @@ const config: ForgeConfig = {
   makers: [
     new MakerSquirrel({}),
     new MakerZIP({}, ['darwin', 'linux']),
-    new MakerRpm({}),
-    new MakerDeb({}),
+    new MakerRpm({
+      options: {
+        name: APP_EXECUTABLE_NAME,
+        bin: APP_EXECUTABLE_NAME,
+        productName: APP_DISPLAY_NAME,
+      },
+    }),
+    new MakerDeb({
+      options: {
+        name: APP_EXECUTABLE_NAME,
+        bin: APP_EXECUTABLE_NAME,
+        productName: APP_DISPLAY_NAME,
+      },
+    }),
   ],
   plugins: [
     new AutoUnpackNativesPlugin({}),
