@@ -147,7 +147,6 @@ Quick tips:
 | `npm run package` | Package the app without installer/zip |
 | `npm run make` | Build artifacts for the current platform |
 | `npm run make:mac` | Build macOS arm64 |
-| `npm run make:mac:universal` | Build macOS universal |
 | `npm run make:win` | Build Windows x64 (on Windows) |
 | `npm run make:linux` | Build Linux x64 (on Linux) |
 
@@ -167,12 +166,6 @@ On Mac (Apple Silicon):
 
 ```bash
 npm run make:mac
-```
-
-Universal (Intel + Apple Silicon):
-
-```bash
-npm run make:mac:universal
 ```
 
 **Typical outputs:**
@@ -233,7 +226,6 @@ The repository includes [`.github/workflows/build.yml`](.github/workflows/build.
 | Artifact | Runner |
 |----------|--------|
 | macOS arm64 (ZIP) | `macos-14` |
-| macOS universal (ZIP) | `macos-14` |
 | Windows x64 (Squirrel) | `windows-latest` |
 | Linux x64 (DEB + RPM + ZIP) | `ubuntu-latest` |
 
